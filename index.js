@@ -15,13 +15,21 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbx1TTMs7VLcOsy7L7C5GtPQ
 // GET запит до GAS
 app.get("/api/transactions", async (req, res) => {
   try {
-    const response = await fetch(GAS_URL);
+    const url = new URL(GAS_URL);
+    
+    // Додаємо всі query-параметри (наприклад context)
+    Object.keys(req.query).forEach((key) =>
+      url.searchParams.append(key, req.query[key])
+    );
+
+    const response = await fetch(url);
     const data = await response.json();
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch transactions" });
   }
 });
+
 
 // POST запит до GAS
 app.post("/api/transactions", async (req, res) => {
